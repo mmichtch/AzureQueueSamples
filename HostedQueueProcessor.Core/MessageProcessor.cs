@@ -23,6 +23,8 @@ namespace HostedQueueProcessor.Core
         {
             _logger.LogInformation($"Processing message: {message}");
             // process message here
+            if (message == "error")
+                throw new Exception("Message cannot be processed.");
         }
     }
 
