@@ -83,9 +83,13 @@ namespace ConsoleQueueProcessor.Core
             });
 
 
+            services.AddSingleton<IConfiguration>(Configuration);
             services.AddScoped<IQueueProcessor, QueueProcessor>();
 
-            services.AddSingleton(serviceProvider => DocumentMessageQueue.CreateQueue(Configuration.GetConnectionString("AzureWebJobsStorage"), Configuration.GetValue<string>("DocumentQueue")));
+            services.AddScoped<DocumentQueues>();
+
+            //services.AddSingleton(serviceProvider => DocumentMessageQueue.CreateQueue(Configuration.GetValue<string>("AzureWebJobsStorage"), Configuration.GetValue<string>("DocumentQueue")));
+            //services.AddSingleton(serviceProvider => DocumentErrorQueue.CreateQueue(Configuration.GetValue<string>("AzureWebJobsStorage"), Configuration.GetValue<string>("DocumentErrorQueue")));
 
             return services.BuildServiceProvider();
         }
