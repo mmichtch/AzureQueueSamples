@@ -18,9 +18,10 @@ namespace HostedQueueProcessor.Core
             _queues = queues;
         }
 
-        public void ProcessQueueMessage([QueueTrigger("%QueueCollection:SourceQueue%")] string message)
+        public void ProcessQueueMessage([QueueTrigger("%QueueCollectionOptions:Queues:SourceQueue%")] string message)
         {
             _logger.LogInformation($"Processing message: {message}");
+
             // process message here
             if (message == "error")
             {

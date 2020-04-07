@@ -1,4 +1,6 @@
-﻿using Microsoft.Azure.WebJobs;
+﻿using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Queue;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -46,6 +48,14 @@ namespace HostedQueueProcessor.Core
                 .ConfigureServices((context, services) =>
                 {
                     services.AddSingleton<INameResolver, ConfigValuesResolver>();
+                    services.AddSingleton<CloudQueueClient>( x =>
+                        {
+                            var storageConnectionString = context.Configuration.GetValue<string>("AzureWebJobsStorage");
+                            var storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+                            return storageAccount.CreateCloudQueueClient();
+                        }
+                    );
+                    services.Configure<QueueCollectionOptions>(context.Configuration.GetSection(nameof(QueueCollectionOptions)));
                     services.AddSingleton<QueueCollection>();
                 })
                 ;
