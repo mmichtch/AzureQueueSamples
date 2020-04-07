@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		NuGet.config = NuGet.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleQueueProcessor.Core", "ConsoleQueueProcessor.Core\ConsoleQueueProcessor.Core.csproj", "{F3766EE7-4AE7-44BC-B8CC-7E41C2E3E485}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleQueueProcessor.Core", "ConsoleQueueProcessor.Core\ConsoleQueueProcessor.Core.csproj", "{F3766EE7-4AE7-44BC-B8CC-7E41C2E3E485}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,9 +1,14 @@
-﻿using System;
+﻿using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Queue;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using Serilog;
+
+using System;
+using System.Threading.Tasks;
 
 namespace HostedQueueProcessor.Core
 {
@@ -16,7 +21,8 @@ namespace HostedQueueProcessor.Core
             var builder = new HostBuilder();
             builder
                 .UseEnvironment(ASPNETCORE_ENVIRONMENT)
-                .ConfigureWebJobs((context, builder) => {
+                .ConfigureWebJobs((context, builder) =>
+                {
                     builder.AddAzureStorageCoreServices();
                     builder.AddAzureStorage();
                 })
@@ -33,16 +39,28 @@ namespace HostedQueueProcessor.Core
                 })
                 // to add application insight:
                 // https://github.com/serilog/serilog-sinks-applicationinsights
-                .UseSerilog((context, loggerConfiguration) => loggerConfiguration
-                    .ReadFrom.Configuration(context.Configuration)
-                    .Enrich.FromLogContext())
-                .ConfigureServices((context, services) => {
-
+                .UseSerilog((context, loggerConfiguration) =>
+                {
+                    loggerConfiguration
+                        .ReadFrom.Configuration(context.Configuration)
+                        .Enrich.FromLogContext();
+                })
+                .ConfigureServices((context, services) =>
+                {
                     services.AddSingleton<INameResolver, ConfigValuesResolver>();
+                    services.AddSingleton<CloudQueueClient>( x =>
+                        {
+                            var storageConnectionString = context.Configuration.GetValue<string>("AzureWebJobsStorage");
+                            var storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+                            return storageAccount.CreateCloudQueueClient();
+                        }
+                    );
+                    services.Configure<QueueCollectionOptions>(context.Configuration.GetSection(nameof(QueueCollectionOptions)));
+                    services.AddSingleton<QueueCollection>();
                 })
                 ;
 
-            using var host = builder.Build();
+            var host = builder.Build();
 
             host.Run();
         }
